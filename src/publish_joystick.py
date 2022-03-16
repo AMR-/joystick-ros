@@ -4,11 +4,11 @@ from sensor_msgs.msg import Joy
 import rospy
 
 
-def joystick_publisher(hz: int = 10):
+def joystick_publisher(hz: int = 10, wired: bool = False):
     jinput_pub: rospy.Publisher = rospy.Publisher('joystick_input', Joy, queue_size=10)
     rospy.init_node('joystick_input_pub')
     rate: rospy.Rate = rospy.Rate(hz)
-    js: Joystick = Joystick()
+    js: Joystick = Joystick(wired=wired)
     while not rospy.is_shutdown():
         jinput: JoystickInput = js.get_input()
         rospy.logdebug("Joystick Input: %s" % jinput)
@@ -18,4 +18,5 @@ def joystick_publisher(hz: int = 10):
 
 
 if __name__ == '__main__':
-    joystick_publisher()
+    wired_controller: bool = False
+    joystick_publisher(wired=wired_controller)

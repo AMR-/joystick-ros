@@ -54,23 +54,40 @@ class JoystickInput(object):
 
 class Joystick(object):
 
-    def __init__(self, fid=0):
+    def __init__(self, fid=0, wired: bool = True):
         pygame.init()
         pygame.joystick.init()
+        self.wired = wired
         self.js = pygame.joystick.Joystick(fid)
         self.js.init()
 
     def get_input(self) -> JoystickInput:
         pygame.event.get()
-        jinput: JoystickInput = JoystickInput(
-            left_stick_horz=self.js.get_axis(0),
-            left_stick_vert=-self.js.get_axis(1),
-            right_stick_horz=self.js.get_axis(2),
-            right_stick_vert=-self.js.get_axis(3),
-            buttons=[self.js.get_button(b) for b in range(JoystickInput.NUM_BUTTONS)],
-            dpad=self.js.get_hat(0)
-        )
-        return jinput
+        if self.wired:
+            jinput: JoystickInput = JoystickInput(
+                left_stick_horz=self.js.get_axis(0),
+                left_stick_vert=-self.js.get_axis(1),
+                right_stick_horz=self.js.get_axis(2),
+                right_stick_vert=-self.js.get_axis(3),
+                buttons=[self.js.get_button(b) for b in range(JoystickInput.NUM_BUTTONS)],
+                dpad=self.js.get_hat(0)
+            )
+            return jinput
+        else:
+            buttons =[
+                self.js.get_button(2), self.js.get_button(0), self.js.get_button(1), self.js.get_button(3),
+                self.js.get_button(4), self.js.get_button(5), 0, 0,
+                self.js.get_button(6), self.js.get_button(7), 0, 0, 0
+            ]
+            jinput: JoystickInput = JoystickInput(
+                left_stick_horz=self.js.get_axis(0),
+                left_stick_vert=-self.js.get_axis(1),
+                right_stick_horz=self.js.get_axis(3),
+                right_stick_vert=-self.js.get_axis(4),
+                buttons=buttons,
+                dpad=self.js.get_hat(0)
+            )
+            return jinput
 
 
 def joystick_input_from_msg(msg) -> JoystickInput:
